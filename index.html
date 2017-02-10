@@ -1,0 +1,34 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>zzyxtv Twitch Channel Followers</title>
+	<meta name="description" content="zzyxtv followers">
+	<meta name="author" content="Eric Little">
+
+	<!--<link rel="stylesheet" href="css/styles.css?v=1.0">-->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<script type="text/javascript">
+	$.ajax({
+		method: 'GET',
+		url: 'https://api.twitch.tv/kraken/channels/zzyzxtv/follows?client_id=wt1mlkhwqcyui3s0t2cgcx0znvhrjq',
+		data: {
+			direction: 'asc',
+			limit: 25
+		},
+		success: function(res) {
+			console.log(res);
+			$.each(res.follows, function(k,v) {
+				$("ol").append("<li>" + v.user.display_name + " followed you on " + v.created_at + "</li>")
+			});
+		}
+	});
+	</script>
+</head>
+
+<body>
+<ol>
+</ol>
+</body>
+</html>
