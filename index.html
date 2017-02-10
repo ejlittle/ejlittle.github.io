@@ -9,43 +9,37 @@
 
 	<!--<link rel="stylesheet" href="css/styles.css?v=1.0">-->
 	<style type="text/css">
-		#loadmore { display: none; }
 	</style>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 	<script src="moment.js"></script>
 	<script type="text/javascript">
+	const CLIENT_ID = "wt1mlkhwqcyui3s0t2cgcx0znvhrjq";
 	$(document).ready(function() {
-		$.ajax({
-			method: 'GET',
-			url: 'https://api.twitch.tv/kraken/channels/zzyzxtv/follows?client_id=wt1mlkhwqcyui3s0t2cgcx0znvhrjq',
-			data: {
-				direction: 'asc',
-				limit: 25
-			},
-			success: function(res) {
-				console.log(res);
-				$.each(res.follows, function(k,v) {
-					$("ol").append("<li><b>" + v.user.display_name + "</b> started following you on " + moment(v.created_at).format("MMMM Do YYYY, h:mm:ss a") + "</li>")
-				});
-				$("#loadmore").data("nextpage", res._links.next).show();
-			}
-		});
+		loadmore("https://api.twitch.tv/kraken/channels/zzyzxtv/follows?direction=asc&limit=25");
 		
 		$("#loadmore").on("click", function(e) {
 			e.preventDefault();
-			$.ajax({
-				method: 'GET',
-				url: $(this).data("nextpage") + "&client_id=wt1mlkhwqcyui3s0t2cgcx0znvhrjq",
-				success: function(res) {
-					$.each(res.follows, function(k,v) {
-						$("ol").append("<li><b>" + v.user.display_name + "</b> started following you on " + moment(v.created_at).format("MMMM Do YYYY, h:mm:ss a") + "</li>")
-					});
-					
-					$("#loadmore").data("nextpage", res._links.next);
-				}
-			});
+			loadmore($(this).data("nextpage"));
 		});
 	});
+	
+	function loadmore(url) {
+		$.ajax({
+			method: 'GET',
+			url: url,
+			data: {
+				client_id: CLIENT_ID
+			},
+			success: function(res) {
+				$.each(res.follows, function(k,v) {
+					$("ol").append("<li><b>" + v.user.display_name + "</b> started following you on " + moment(v.created_at).format("MMMM Do YYYY, h:mm:ss a") + "</li>")
+				});
+				
+				$("#loadmore").data("nextpage", res._links.next);
+			}
+		});
+	}
+	
 	</script>
 </head>
 
