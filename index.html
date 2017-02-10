@@ -8,36 +8,42 @@
 	<meta name="author" content="Eric Little">
 
 	<!--<link rel="stylesheet" href="css/styles.css?v=1.0">-->
+	<style type="text/css">
+		#loadmore { display: none; }
+	</style>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<script src="moment.js"></script>
 	<script type="text/javascript">
-	$.ajax({
-		method: 'GET',
-		url: 'https://api.twitch.tv/kraken/channels/zzyzxtv/follows?client_id=wt1mlkhwqcyui3s0t2cgcx0znvhrjq',
-		data: {
-			direction: 'asc',
-			limit: 25
-		},
-		success: function(res) {
-			console.log(res);
-			$.each(res.follows, function(k,v) {
-				$("ol").append("<li>" + v.user.display_name + " followed you on " + v.created_at + "</li>")
-			});
-			$("body").append('<a href="javascript:void(0);" id="loadmore">Next 25 Followers</a>');
-			$("#loadmore").data("nextpage", res._links.next);
-		}
-	});
-	
-	$("body").on("click", "#loadmore", function() {
+	$(document).ready(function() {
 		$.ajax({
 			method: 'GET',
-			url: $(this).data("nextpage"),
+			url: 'https://api.twitch.tv/kraken/channels/zzyzxtv/follows?client_id=wt1mlkhwqcyui3s0t2cgcx0znvhrjq',
+			data: {
+				direction: 'asc',
+				limit: 25
+			},
 			success: function(res) {
+				console.log(res);
 				$.each(res.follows, function(k,v) {
-					$("ol").append("<li>" + v.user.display_name + " followed you on " + v.created_at + "</li>")
+					$("ol").append("<li><b>" + v.user.display_name + "</b> started following you on " + moment(v.created_at).format("MMMM Do YYYY, h:mm:ss a") + "</li>")
 				});
-				
-				$("#loadmore").data("nextpage", res._links.next);
+				$("#loadmore").data("nextpage", res._links.next).show();
 			}
+		});
+		
+		$("#loadmore").on("click", function(e) {
+			e.preventDefault();
+			$.ajax({
+				method: 'GET',
+				url: $(this).data("nextpage") + "&client_id=wt1mlkhwqcyui3s0t2cgcx0znvhrjq",
+				success: function(res) {
+					$.each(res.follows, function(k,v) {
+						$("ol").append("<li><b>" + v.user.display_name + "</b> started following you on " + moment(v.created_at).format("MMMM Do YYYY, h:mm:ss a") + "</li>")
+					});
+					
+					$("#loadmore").data("nextpage", res._links.next);
+				}
+			});
 		});
 	});
 	</script>
@@ -46,5 +52,6 @@
 <body>
 <ol>
 </ol>
+<a href="#" id="loadmore">Next 25 Followers</a>
 </body>
 </html>
