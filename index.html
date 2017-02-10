@@ -22,7 +22,23 @@
 			$.each(res.follows, function(k,v) {
 				$("ol").append("<li>" + v.user.display_name + " followed you on " + v.created_at + "</li>")
 			});
+			$("body").append('<a href="javascript:void(0);" id="loadmore">Next 25 Followers</a>');
+			$("#loadmore").data("nextpage", res._links.next);
 		}
+	});
+	
+	$("body").on("click", "#loadmore", function() {
+		$.ajax({
+			method: 'GET',
+			url: $(this).data("nextpage"),
+			success: function(res) {
+				$.each(res.follows, function(k,v) {
+					$("ol").append("<li>" + v.user.display_name + " followed you on " + v.created_at + "</li>")
+				});
+				
+				$("#loadmore").data("nextpage", res._links.next);
+			}
+		});
 	});
 	</script>
 </head>
