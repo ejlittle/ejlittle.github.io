@@ -1,0 +1,56 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>zzyxtv Twitch Channel Followers</title>
+	<meta name="description" content="zzyxtv followers">
+	<meta name="author" content="Eric Little">
+
+	<!--<link rel="stylesheet" href="css/styles.css?v=1.0">-->
+	<style type="text/css">
+	li { font-family: monospace; font-size: 20px; line-height: 20px; }
+	li > img { vertical-align: text-bottom; }
+	.spacer { display: inline-block; width: 20px; }
+	ol { margin-left: 3em; }
+	#loadmore { display: none; }
+	</style>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<script src="moment.js"></script>
+	<script type="text/javascript">
+	const CLIENT_ID = "wt1mlkhwqcyui3s0t2cgcx0znvhrjq";
+	$(document).ready(function() {
+		loadmore("https://api.twitch.tv/kraken/channels/zzyzxtv/follows?direction=asc&limit=100");
+		
+		$("#loadmore").on("click", function(e) {
+			e.preventDefault();
+			loadmore($(this).data("nextpage"));
+		});
+	});
+	
+	function loadmore(url) {
+		$.ajax({
+			method: 'GET',
+			url: url,
+			data: {
+				client_id: CLIENT_ID
+			},
+			success: function(res) {
+				$.each(res.follows, function(k,v) {
+					$("ol").append('<li>' + (v.user.logo !== null ? '<img src="' + v.user.logo + '" width="20" />' : '<span class="spacer"></span>') + ' <b' + (v.user.type !== "user" ? ' style="color: red;"' : "") + '>' + v.user.display_name + '</b> started following you on ' + moment(v.created_at).format("MMMM Do YYYY, h:mm:ss a") + '</li>')
+				});
+				
+				$("#loadmore").data("nextpage", res._links.next);
+			}
+		});
+	}
+	
+	</script>
+</head>
+
+<body>
+<ol>
+</ol>
+<a href="#" id="loadmore">Next 100 Followers</a>
+</body>
+</html>
